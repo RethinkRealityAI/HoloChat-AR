@@ -1,0 +1,8 @@
+{
+  "name": "HoloChat AR",
+  "description": "A futuristic 3D model viewer with AR capabilities and a generative AI conversational avatar interface.",
+  "requestFramePermissions": [
+    "microphone",
+    "camera"
+  ]
+}

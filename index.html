@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HoloChat AR</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      if (navigator.xr) {
+        const originalRequestSession = navigator.xr.requestSession.bind(navigator.xr);
+        navigator.xr.requestSession = async function(mode, options) {
+          if (mode === 'immersive-ar') {
+            options = options || {};
+            options.optionalFeatures = options.optionalFeatures || [];
+            if (!options.optionalFeatures.includes('camera-access')) {
+              options.optionalFeatures.push('camera-access');
+            }
+          }
+          try {
+            const session = await originalRequestSession(mode, options);
+            window.xrSession = session;
+            session.addEventListener('end', () => {
+              window.xrSession = null;
+              window.xrBinding = null;
+            });
+            return session;
+          } catch (err) {
+            console.error("Failed to start AR session:", err);
+            throw err;
+          }
+        };
+      }
+    </script>
+    <!-- Google Model Viewer -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+    <style>
+      /* Custom scrollbar for the sci-fi look */
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #0f172a; 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #06b6d4; 
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #22d3ee; 
+      }
+      model-viewer {
+        width: 100%;
+        height: 100%;
+        --poster-color: transparent;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "@google/genai": "https://esm.sh/@google/genai@^1.33.0",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-slate-950 text-white overflow-hidden">
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>
